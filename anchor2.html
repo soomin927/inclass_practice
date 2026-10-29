@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Learning Vocabulary</title>
+
+<style>
+:root {
+  --pink: #ffe1e9;
+  --lavender: #e8ddff;
+  --mint: #d9f5eb;
+  --yellow: #fff1ca;
+  --blue: #dceeff;
+  --purple: #8066b5;
+  --dark: #424052;
+  --green: #428d72;
+  --red: #d8667b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(
+    135deg,
+    #fff0f5,
+    #f0eaff,
+    #e7f8f2
+  );
+  min-height: 100vh;
+  color: var(--dark);
+}
+
+.container {
+  max-width: 850px;
+  margin: auto;
+  padding: 30px 18px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+h1 {
+  font-size: 38px;
+  color: var(--purple);
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: #777;
+}
+
+.time-badge {
+  display: inline-block;
+  background: var(--yellow);
+  padding: 9px 18px;
+  border-radius: 25px;
+  margin-top: 12px;
+  font-weight: bold;
+}
+
+.panel {
+  background: rgba(255,255,255,.92);
+  border-radius: 24px;
+  padding: 25px;
+  margin-bottom: 22px;
+  box-shadow: 0 8px 25px rgba(100,80,140,.08);
+}
+
+.navigation {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+button {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s;
+  font-family: inherit;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  filter: brightness(.98);
+}
+
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.primary {
+  background: var(--lavender);
+  color: #604d8e;
+}
+
+.secondary {
+  background: var(--mint);
+  color: #397967;
+}
+
+.pink {
+  background: var(--pink);
+  color: #a34d70;
+}
+
+.yellow {
+  background: var(--yellow);
+  color: #94702e;
+}
+
+.active {
+  outline: 3px solid #a991dd;
+}
+
+.section-title {
+  text-align: center;
+  color: var(--purple);
+  margin-top: 0;
+}
+
+.progress-text {
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: #eeeaf5;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #f3aac4,
+    #ad9ae6,
+    #8ddac5
+  );
+  width: 0%;
+  transition: width .4s;
+}
+
+.flashcard {
+  width: 100%;
+  min-height: 300px;
+  perspective: 1000px;
+  cursor: pointer;
+  margin: 25px auto;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  transition: transform .6s;
+  transform-style: preserve-3d;
+}
+
+.flashcard.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  text-align: center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow-y: auto;
+}
+
+.flashcard-front {
+  background: linear-gradient(
+    135deg,
+    #f8dfe9,
+    #e9dfff
+  );
+}
+
+.flashcard-back {
+  background: linear-gradient(
+    135deg,
+    #dff7ef,
+    #e2efff
+  );
+  transform: rotateY(180deg);
+}
+
+.card-label {
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: .65;
+}
+
+.word {
+  font-size: clamp(27px, 5vw, 39px);
+  color: #66508f;
+  margin: 20px 0;
+  font-weight: bold;
+}
+
+.meaning {
+  font-size: 28px;
+  font-weight: bold;
+  color: #357e70;
+  margin: 15px 0;
+}
+
+.example {
+  font-size: 17px;
+  line-height: 1.6;
+  max-width: 550px;
+}
+
+.korean-example {
+  color: #657477;
+  font-size: 14px;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.hint {
+  font-size: 13px;
+  opacity: .65;
+  margin-top: 18px;
+}
+
+.card-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.card-counter {
+  text-align: center;
+  color: #777;
+  margin-top: 18px;
+}
+
+.quiz-type {
+  display: inline-block;
+  background: var(--yellow);
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 13px;
+  margin-bottom: 15px;
+}
+
+.question {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.6;
+  margin: 15px 0 25px;
+}
+
+.question-context {
+  font-size: 14px;
+  color: #777;
+  margin-top: -12px;
+  margin-bottom: 18px;
+}
+
+.answer-input {
+  width: 100%;
+  border: 2px solid #e4d8f7;
+  border-radius: 14px;
+  padding: 15px;
+  font-size: 17px;
+  outline: none;
+  background: #fcfaff;
+}
+
+.answer-input:focus {
+  border-color: #aa94dd;
+}
+
+.feedback {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 15px;
+  line-height: 1.7;
+}
+
+.correct {
+  background: #e1f7e9;
+  color: #26714f;
+}
+
+.incorrect {
+  background: #ffe5e8;
+  color: #a74359;
+}
+
+.hint-feedback {
+  background: #fff4d8;
+  color: #89651d;
+  border: 2px dashed #e7c878;
+}
+
+.hint-letters {
+  display: inline-block;
+  margin: 10px 0;
+  padding: 10px 16px;
+  background: white;
+  border-radius: 12px;
+  font-size: 21px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #8066b5;
+}
+
+.quiz-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.score-box {
+  display: flex;
+  justify-content: space-around;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.stat {
+  background: #f5f0ff;
+  padding: 15px;
+  border-radius: 18px;
+  text-align: center;
+  min-width: 120px;
+}
+
+.stat strong {
+  display: block;
+  font-size: 25px;
+  color: var(--purple);
+  margin-bottom: 5px;
+}
+
+.reading {
+  background: #f8f5ff;
+  padding: 22px;
+  border-radius: 18px;
+  line-height: 2;
+  font-size: 17px;
+}
+
+.reading strong {
+  color: #8666bb;
+  background: #eee5ff;
+  padding: 2px 5px;
+  border-radius: 5px;
+}
+
+.instruction {
+  text-align: center;
+  color: #777;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.result {
+  text-align: center;
+}
+
+.result h2 {
+  color: var(--purple);
+  font-size: 30px;
+}
+
+.result-score {
+  font-size: 48px;
+  color: #8a70c1;
+  font-weight: bold;
+}
+
+.result-details {
+  background: #f8f5ff;
+  padding: 18px;
+  border-radius: 18px;
+  margin: 20px 0;
+  line-height: 2;
+}
+
+.hidden {
+  display: none !important;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #999;
+  font-size: 13px;
+}
+
+@media(max-width:600px) {
+  h1 {
+    font-size: 30px;
+  }
+
+  .panel {
+    padding: 18px;
+  }
+
+  .flashcard,
+  .flashcard-inner {
+    min-height: 330px;
+    height: 330px;
+  }
+
+  .question {
+    font-size: 19px;
+  }
+
+  .navigation button,
+  .card-controls button {
+    flex: 1;
+  }
+
+  .stat {
+    min-width: 90px;
+    flex: 1;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+  <h1>🌷 Learning Vocabulary</h1>
+  <div class="subtitle">
+    Learn useful English expressions with flashcards and quizzes!
+  </div>
+  <div class="time-badge">
+    ⏰ 10-Minute Vocabulary Challenge
+  </div>
+</header>
+
+<div class="panel">
+  <div class="navigation">
+
+    <button
+      id="readingTab"
+      class="primary"
+      onclick="showSection('reading')">
+      📖 Reading
+    </button>
+
+    <button
+      id="cardsTab"
+      class="primary"
+      onclick="showSection('cards')">
+      💌 Flashcards
+    </button>
+
+    <button
+      id="quizTab"
+      class="primary"
+      onclick="showSection('quiz')">
+      ✏️ Quiz
+    </button>
+
+  </div>
+</div>
+
+<!-- READING -->
+
+<section id="readingSection" class="panel">
+
+  <h2 class="section-title">
+    📖 Building Better Study Habits
+  </h2>
+
+  <p class="instruction">
+    Read the story and notice the highlighted expressions.
+  </p>
+
+  <div class="reading">
+
+    Jisoo wanted to improve her study habits
+    before the exam period.
+
+    She began to
+    <strong>keep track of</strong>
+    how long she studied each day.
+
+    She also learned when to
+    <strong>take a break</strong>
+    instead of studying for too long.
+
+    While studying, she tried to
+    <strong>stay away from</strong>
+    her phone and made sure to
+    <strong>get enough sleep</strong>.
+
+    When she felt stressed, she learned how to
+    <strong>deal with</strong>
+    it by taking a short walk.
+
+    After several weeks, she found it easier to
+    <strong>stick to</strong>
+    her new routine.
+
+  </div>
+
+  <div class="quiz-actions">
+
+    <button
+      class="secondary"
+      onclick="speakText(readingText)">
+      🔊 Listen to the Story
+    </button>
+
+    <button
+      class="primary"
+      onclick="showSection('cards')">
+      Start Learning →
+    </button>
+
+  </div>
+
+</section>
+
+<!-- FLASHCARDS -->
+
+<section id="cardsSection" class="panel hidden">
+
+  <h2 class="section-title">
+    💌 Vocabulary Flashcards
+  </h2>
+
+  <p class="instruction">
+    Read the English expression.
+    Click the card to reveal its Korean meaning
+    and example sentence.
+  </p>
+
+  <div class="progress-text" id="cardProgressText">
+    Cards studied: 0 / 6
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="cardProgress"></div>
+  </div>
+
+  <div
+    class="flashcard"
+    id="flashcard"
+    onclick="flipCard()"
+    role="button"
+    tabindex="0"
+    aria-label="Flip vocabulary flashcard">
+
+    <div class="flashcard-inner">
+
+      <div class="flashcard-front">
+
+        <div class="card-label">
+          English Expression
+        </div>
+
+        <div class="word" id="cardWord"></div>
+
+        <div class="hint">
+          ✨ Click to reveal the meaning
+        </div>
+
+      </div>
+
+      <div class="flashcard-back">
+
+        <div class="card-label">
+          Korean Meaning
+        </div>
+
+        <div class="meaning" id="cardMeaning"></div>
+
+        <div class="example" id="cardExample"></div>
+
+        <div
+          class="korean-example"
+          id="cardKoreanExample">
+        </div>
+
+        <div class="hint">
+          Click to flip back
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="card-controls">
+
+    <button class="pink" onclick="previousCard()">
+      ← Previous
+    </button>
+
+    <button class="yellow" onclick="speakCurrentWord()">
+      🔊 Word
+    </button>
+
+    <button class="yellow" onclick="speakCurrentExample()">
+      🔊 Example
+    </button>
+
+    <button class="secondary" onclick="nextCard()">
+      Next →
+    </button>
+
+  </div>
+
+  <div class="card-counter" id="cardCounter"></div>
+
+  <div class="quiz-actions" style="justify-content:center">
+
+    <button class="primary" onclick="startQuiz()">
+      Ready? Start Quiz ✨
+    </button>
+
+  </div>
+
+</section>
+
+<!-- QUIZ -->
+
+<section id="quizSection" class="panel hidden">
+
+  <h2 class="section-title">
+    ✏️ Vocabulary Quiz
+  </h2>
+
+  <p class="instruction">
+    You have two chances for each question!
+    <br>
+    If your first answer is incorrect,
+    you will receive a first-letter hint.
+  </p>
+
+  <div id="quizContent">
+
+    <div class="score-box">
+
+      <div class="stat">
+        <strong id="questionNumber">1/18</strong>
+        Question
+      </div>
+
+      <div class="stat">
+        <strong id="scoreDisplay">0</strong>
+        Points
+      </div>
+
+      <div class="stat">
+        <strong id="attemptDisplay">1/2</strong>
+        Attempt
+      </div>
+
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="quizProgress"></div>
+    </div>
+
+    <div style="margin-top:25px">
+
+      <div class="quiz-type" id="quizType"></div>
+
+      <div class="question" id="questionText"></div>
+
+      <div class="question-context" id="questionContext"></div>
+
+      <input
+        id="answerInput"
+        class="answer-input"
+        type="text"
+        placeholder="Type your answer here..."
+        autocomplete="off"
+        spellcheck="false"
+      >
+
+      <div class="quiz-actions">
+
+        <button
+          class="primary"
+          id="checkButton"
+          onclick="checkAnswer()">
+          Check Answer ✓
+        </button>
+
+        <button
+          class="secondary hidden"
+          id="nextButton"
+          onclick="nextQuestion()">
+          Next Question →
+        </button>
+
+      </div>
+
+      <div
+        id="feedback"
+        class="feedback hidden"
+        aria-live="polite">
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- FINAL RESULT -->
+
+  <div id="resultSection" class="result hidden">
+
+    <h2>🎉 Great Job!</h2>
+
+    <p>You completed the vocabulary quiz!</p>
+
+    <div class="result-score" id="finalScore"></div>
+
+    <p id="resultMessage"></p>
+
+    <div class="result-details" id="resultDetails"></div>
+
+    <div class="quiz-actions" style="justify-content:center">
+
+      <button class="primary" onclick="startQuiz()">
+        🔄 Try Again
+      </button>
+
+      <button
+        class="secondary"
+        onclick="showSection('cards')">
+        💌 Review Flashcards
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+<footer>
+  🌸 Learn • Practice • Remember 🌸
+  <br>
+  Made for Grade 8 English Learners
+</footer>
+
+</div>
+
+<script>
+
+/* ==================================
+   VOCABULARY DATA
+================================== */
+
+const vocabulary = [
+
+  {
+    word: "keep track of",
+    meaning: "기록하다, 계속 파악하다",
+    hintMeaning: "기록하다",
+    accepted: [
+      "기록하다",
+      "계속 파악하다",
+      "기록하고 파악하다",
+      "추적하다",
+      "계속 확인하다",
+      "기록",
+      "파악하다"
+    ],
+    example:
+      "I keep track of my study time every day.",
+    koreanExample:
+      "나는 매일 공부 시간을 기록한다.",
+    blank:
+      "I ______ my study time every day."
+  },
+
+  {
+    word: "take a break",
+    meaning: "휴식을 취하다, 쉬다",
+    hintMeaning: "휴식을 취하다",
+    accepted: [
+      "휴식을 취하다",
+      "쉬다",
+      "잠깐 쉬다",
+      "휴식하다",
+      "휴식을 가지다",
+      "휴식을 갖다"
+    ],
+    example:
+      "You should take a break after studying.",
+    koreanExample:
+      "공부한 후에는 휴식을 취해야 한다.",
+    blank:
+      "You should ______ after studying."
+  },
+
+  {
+    word: "stay away from",
+    meaning: "~을 멀리하다, ~을 피하다",
+    hintMeaning: "멀리하다",
+    accepted: [
+      "멀리하다",
+      "피하다",
+      "떨어져 있다",
+      "거리를 두다",
+      "멀리 떨어져 있다",
+      "가까이하지 않다"
+    ],
+    example:
+      "I try to stay away from my phone while studying.",
+    koreanExample:
+      "나는 공부하는 동안 휴대전화를 멀리하려고 노력한다.",
+    blank:
+      "I try to ______ my phone while studying."
+  },
+
+  {
+    word: "get enough sleep",
+    meaning: "충분한 수면을 취하다, 충분히 자다",
+    hintMeaning: "충분히 자다",
+    accepted: [
+      "충분한 수면을 취하다",
+      "충분히 자다",
+      "잠을 충분히 자다",
+      "충분한 잠을 자다",
+      "충분히 잠을 자다",
+      "충분한 수면을 하다"
+    ],
+    example:
+      "Students need to get enough sleep every night.",
+    koreanExample:
+      "학생들은 매일 밤 충분히 자야 한다.",
+    blank:
+      "Students need to ______ every night."
+  },
+
+  {
+    word: "deal with",
+    meaning: "~을 다루다, ~에 대처하다",
+    hintMeaning: "대처하다",
+    accepted: [
+      "다루다",
+      "대처하다",
+      "처리하다",
+      "해결하다",
+      "대응하다",
+      "맞서다"
+    ],
+    example:
+      "I deal with stress by taking a walk.",
+    koreanExample:
+      "나는 산책을 하면서 스트레스에 대처한다.",
+    blank:
+      "I ______ stress by taking a walk."
+  },
+
+  {
+    word: "stick to",
+    meaning: "~을 계속 지키다, ~을 고수하다",
+    hintMeaning: "지키다",
+    accepted: [
+      "계속 지키다",
+      "지키다",
+      "고수하다",
+      "꾸준히 지키다",
+      "계속하다",
+      "따르다",
+      "유지하다"
+    ],
+    example:
+      "I try to stick to my study plan.",
+    koreanExample:
+      "나는 공부 계획을 꾸준히 지키려고 노력한다.",
+    blank:
+      "I try to ______ my study plan."
+  }
+
+];
+
+/* ==================================
+   READING TEXT
+================================== */
+
+const readingText = `
+Building Better Study Habits.
+
+Jisoo wanted to improve her study habits
+before the exam period.
+
+She began to keep track of how long
+she studied each day.
+
+She also learned when to take a break
+instead of studying for too long.
+
+While studying, she tried to stay away
+from her phone and made sure to
+get enough sleep.
+
+When she felt stressed,
+she learned how to deal with it
+by taking a short walk.
+
+After several weeks,
+she found it easier to stick to
+her new routine.
+`;
+
+/* ==================================
+   APP STATE
+================================== */
+
+let currentCard = 0;
+
+let studiedCards = new Set();
+
+let questions = [];
+
+let currentQuestion = 0;
+
+let score = 0;
+
+let firstTryCorrect = 0;
+
+let secondTryCorrect = 0;
+
+let incorrectCount = 0;
+
+let attempt = 1;
+
+let answerChecked = false;
+
+/* ==================================
+   NAVIGATION
+================================== */
+
+function showSection(section) {
+
+  const sections = {
+    reading: "readingSection",
+    cards: "cardsSection",
+    quiz: "quizSection"
+  };
+
+  const tabs = {
+    reading: "readingTab",
+    cards: "cardsTab",
+    quiz: "quizTab"
+  };
+
+  Object.values(sections).forEach(id => {
+    document.getElementById(id)
+      .classList.add("hidden");
+  });
+
+  Object.values(tabs).forEach(id => {
+    document.getElementById(id)
+      .classList.remove("active");
+  });
+
+  document.getElementById(sections[section])
+    .classList.remove("hidden");
+
+  document.getElementById(tabs[section])
+    .classList.add("active");
+
+  if (section === "cards") {
+    displayCard();
+  }
+
+  if (section === "quiz" && questions.length === 0) {
+    startQuiz();
+  }
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+/* ==================================
+   FLASHCARDS
+================================== */
+
+function displayCard() {
+
+  const item = vocabulary[currentCard];
+
+  document.getElementById("flashcard")
+    .classList.remove("flipped");
+
+  document.getElementById("cardWord")
+    .textContent = item.word;
+
+  document.getElementById("cardMeaning")
+    .textContent = item.meaning;
+
+  document.getElementById("cardExample")
+    .textContent = item.example;
+
+  document.getElementById("cardKoreanExample")
+    .textContent = item.koreanExample;
+
+  document.getElementById("cardCounter")
+    .textContent =
+    `Card ${currentCard + 1} of ${vocabulary.length}`;
+
+  updateCardProgress();
+
+}
+
+function flipCard() {
+
+  document.getElementById("flashcard")
+    .classList.toggle("flipped");
+
+  studiedCards.add(currentCard);
+
+  updateCardProgress();
+
+}
+
+function updateCardProgress() {
+
+  const count = studiedCards.size;
+
+  const percent =
+    (count / vocabulary.length) * 100;
+
+  document.getElementById("cardProgress")
+    .style.width = percent + "%";
+
+  document.getElementById("cardProgressText")
+    .textContent =
+    `Cards studied: ${count} / ${vocabulary.length}`;
+
+}
+
+function nextCard() {
+
+  currentCard =
+    (currentCard + 1) % vocabulary.length;
+
+  displayCard();
+
+}
+
+function previousCard() {
+
+  currentCard =
+    (currentCard - 1 + vocabulary.length)
+    % vocabulary.length;
+
+  displayCard();
+
+}
+
+/* ==================================
+   PRONUNCIATION
+================================== */
+
+function speakText(text) {
+
+  if (!("speechSynthesis" in window)) {
+
+    alert("Your browser does not support speech.");
+
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const utterance =
+    new SpeechSynthesisUtterance(text);
+
+  utterance.lang = "en-US";
+  utterance.rate = 0.85;
+  utterance.pitch = 1;
+  utterance.volume = 1;
+
+  const voices =
+    window.speechSynthesis.getVoices();
+
+  const englishVoice = voices.find(
+    voice => voice.lang === "en-US"
+  ) || voices.find(
+    voice => voice.lang.startsWith("en")
+  );
+
+  if (englishVoice) {
+    utterance.voice = englishVoice;
+  }
+
+  window.speechSynthesis.speak(utterance);
+
+}
+
+function speakCurrentWord() {
+  speakText(vocabulary[currentCard].word);
+}
+
+function speakCurrentExample() {
+  speakText(vocabulary[currentCard].example);
+}
+
+/* ==================================
+   SHUFFLE
+================================== */
+
+function shuffleArray(array) {
+
+  const result = [...array];
+
+  for (let i = result.length - 1; i > 0; i--) {
+
+    const j = Math.floor(
+      Math.random() * (i + 1)
+    );
+
+    [result[i], result[j]] =
+    [result[j], result[i]];
+
+  }
+
+  return result;
+
+}
+
+/* ==================================
+   GENERATE QUIZ
+================================== */
+
+function generateQuestions() {
+
+  const result = [];
+
+  vocabulary.forEach((item, index) => {
+
+    result.push({
+      type: "meaning",
+      itemIndex: index,
+      question:
+        `What does "${item.word}" mean in Korean?`,
+      context:
+        "영어 표현의 한국어 뜻을 입력하세요.",
+      answer: item.meaning,
+      accepted: item.accepted,
+      hintAnswer: item.hintMeaning
+    });
+
+    result.push({
+      type: "english",
+      itemIndex: index,
+      question:
+        `Write the English expression for: ${item.meaning}`,
+      context:
+        "한국어 뜻에 맞는 영어 표현을 입력하세요.",
+      answer: item.word,
+      accepted: [item.word],
+      hintAnswer: item.word
+    });
+
+    result.push({
+      type: "blank",
+      itemIndex: index,
+      question: item.blank,
+      context:
+        "Complete the sentence with the correct expression.",
+      answer: item.word,
+      accepted: [item.word],
+      hintAnswer: item.word
+    });
+
+  });
+
+  return shuffleArray(result);
+
+}
+
+/* ==================================
+   START QUIZ
+================================== */
+
+function startQuiz() {
+
+  questions = generateQuestions();
+
+  currentQuestion = 0;
+
+  score = 0;
+
+  firstTryCorrect = 0;
+
+  secondTryCorrect = 0;
+
+  incorrectCount = 0;
+
+  attempt = 1;
+
+  answerChecked = false;
+
+  document.getElementById("quizContent")
+    .classList.remove("hidden");
+
+  document.getElementById("resultSection")
+    .classList.add("hidden");
+
+  showSection("quiz");
+
+  displayQuestion();
+
+}
+
+/* ==================================
+   DISPLAY QUESTION
+================================== */
+
+function displayQuestion() {
+
+  if (currentQuestion >= questions.length) {
+
+    showResults();
+
+    return;
+  }
+
+  const q = questions[currentQuestion];
+
+  attempt = 1;
+
+  answerChecked = false;
+
+  document.getElementById("questionNumber")
+    .textContent =
+    `${currentQuestion + 1}/${questions.length}`;
+
+  document.getElementById("scoreDisplay")
+    .textContent = score;
+
+  document.getElementById("attemptDisplay")
+    .textContent = "1/2";
+
+  document.getElementById("quizProgress")
+    .style.width =
+    (currentQuestion / questions.length * 100) + "%";
+
+  const typeLabels = {
+    meaning: "🌷 English → Korean",
+    english: "🌿 Korean → English",
+    blank: "✨ Fill in the Blank"
+  };
+
+  document.getElementById("quizType")
+    .textContent = typeLabels[q.type];
+
+  document.getElementById("questionText")
+    .textContent = q.question;
+
+  document.getElementById("questionContext")
+    .textContent = q.context;
+
+  const input = document.getElementById("answerInput");
+
+  input.value = "";
+
+  input.disabled = false;
+
+  input.placeholder =
+    q.type === "meaning"
+    ? "한국어 뜻을 입력하세요"
+    : "Type the English expression";
+
+  const feedback = document.getElementById("feedback");
+
+  feedback.className = "feedback hidden";
+
+  feedback.innerHTML = "";
+
+  document.getElementById("checkButton")
+    .classList.remove("hidden");
+
+  document.getElementById("checkButton")
+    .textContent = "Check Answer ✓";
+
+  document.getElementById("nextButton")
+    .classList.add("hidden");
+
+  input.focus();
+
+}
+
+/* ==================================
+   NORMALIZATION
+================================== */
+
+function normalizeEnglish(text) {
+
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[.,!?]/g, "")
+    .replace(/\s+/g, " ");
+
+}
+
+function normalizeKorean(text) {
+
+  return text
+    .trim()
+    .replace(/[.,!?~]/g, "")
+    .replace(/\s+/g, " ")
+    .replace(/^(을|를|에)\s*/g, "");
+
+}
+
+function isCorrectAnswer(userAnswer, question) {
+
+  if (question.type === "meaning") {
+
+    const normalized = normalizeKorean(userAnswer);
+
+    return question.accepted.some(
+      answer =>
+        normalizeKorean(answer) === normalized
+    );
+
+  }
+
+  const normalized = normalizeEnglish(userAnswer);
+
+  return question.accepted.some(
+    answer =>
+      normalizeEnglish(answer) === normalized
+  );
+
+}
+
+/* ==================================
+   FIRST LETTER HINT
+================================== */
+
+function createEnglishHint(expression) {
+
+  return expression
+    .split(" ")
+    .map(word => {
+
+      if (word.length === 1) {
+        return word;
+      }
+
+      return word[0] + "_".repeat(word.length - 1);
+
+    })
+    .join(" ");
+
+}
+
+function createKoreanHint(expression) {
+
+  return expression
+    .split(" ")
+    .map(word => {
+
+      if (word.length === 1) {
+        return word;
+      }
+
+      return word[0] + "○".repeat(word.length - 1);
+
+    })
+    .join(" ");
+
+}
+
+function getHint(question) {
+
+  if (question.type === "meaning") {
+
+    return createKoreanHint(question.hintAnswer);
+
+  }
+
+  return createEnglishHint(question.hintAnswer);
+
+}
+
+/* ==================================
+   CHECK ANSWER
+================================== */
+
+function checkAnswer() {
+
+  if (answerChecked) return;
+
+  const input = document.getElementById("answerInput");
+
+  const userAnswer = input.value.trim();
+
+  if (!userAnswer) {
+
+    alert("Please enter your answer first!");
+
+    input.focus();
+
+    return;
+  }
+
+  const q = questions[currentQuestion];
+
+  const item = vocabulary[q.itemIndex];
+
+  const correct = isCorrectAnswer(userAnswer, q);
+
+  const feedback = document.getElementById("feedback");
+
+  feedback.classList.remove("hidden");
+
+  /*
+    CASE 1:
+    Correct on first attempt
+  */
+
+  if (correct && attempt === 1) {
+
+    score += 2;
+
+    firstTryCorrect++;
+
+    feedback.className = "feedback correct";
+
+    feedback.innerHTML = `
+      <strong>🎉 Excellent! Correct on your first try!</strong>
+      <br>
+      ⭐ +2 points
+      <br><br>
+      <strong>${escapeHTML(item.word)}</strong>
+      — ${escapeHTML(item.meaning)}
+      <br>
+      <small>${escapeHTML(item.example)}</small>
+    `;
+
+    finishQuestion();
+
+    return;
+  }
+
+  /*
+    CASE 2:
+    Incorrect on first attempt
+    Give hint and second chance
+  */
+
+  if (!correct && attempt === 1) {
+
+    attempt = 2;
+
+    document.getElementById("attemptDisplay")
+      .textContent = "2/2";
+
+    const hint = getHint(q);
+
+    feedback.className = "feedback hint-feedback";
+
+    feedback.innerHTML = `
+      <strong>💛 Not quite! Try one more time!</strong>
+      <br>
+      Here's a little hint to help you.
+      <br>
+      <span class="hint-letters">
+        ${escapeHTML(hint)}
+      </span>
+      <br>
+      <small>
+        Look at the first letter of each word.
+        Think carefully and try again!
+      </small>
+    `;
+
+    input.value = "";
+
+    input.placeholder = "Try again with the hint!";
+
+    document.getElementById("checkButton")
+      .textContent = "Try Again ✓";
+
+    input.focus();
+
+    return;
+  }
+
+  /*
+    CASE 3:
+    Correct on second attempt
+  */
+
+  if (correct && attempt === 2) {
+
+    score += 1;
+
+    secondTryCorrect++;
+
+    feedback.className = "feedback correct";
+
+    feedback.innerHTML = `
+      <strong>🌷 You got it! Great second try!</strong>
+      <br>
+      ⭐ +1 point
+      <br><br>
+      <strong>${escapeHTML(item.word)}</strong>
+      — ${escapeHTML(item.meaning)}
+      <br>
+      <small>${escapeHTML(item.example)}</small>
+    `;
+
+    finishQuestion();
+
+    return;
+  }
+
+  /*
+    CASE 4:
+    Incorrect on second attempt
+    Reveal correct answer
+  */
+
+  if (!correct && attempt === 2) {
+
+    incorrectCount++;
+
+    feedback.className = "feedback incorrect";
+
+    feedback.innerHTML = `
+      <strong>💗 Good effort! Let's learn the answer.</strong>
+      <br><br>
+      Correct answer:
+      <strong>${escapeHTML(q.answer)}</strong>
+      <br>
+      <strong>${escapeHTML(item.word)}</strong>
+      — ${escapeHTML(item.meaning)}
+      <br><br>
+      <small>Example: ${escapeHTML(item.example)}</small>
+      <br>
+      <small>
+        Remember this expression for next time!
+      </small>
+    `;
+
+    finishQuestion();
+
+  }
+
+}
+
+/* ==================================
+   FINISH CURRENT QUESTION
+================================== */
+
+function finishQuestion() {
+
+  answerChecked = true;
+
+  document.getElementById("answerInput")
+    .disabled = true;
+
+  document.getElementById("checkButton")
+    .classList.add("hidden");
+
+  const nextButton =
+    document.getElementById("nextButton");
+
+  nextButton.classList.remove("hidden");
+
+  nextButton.textContent =
+    currentQuestion === questions.length - 1
+    ? "See Results 🎉"
+    : "Next Question →";
+
+  document.getElementById("scoreDisplay")
+    .textContent = score;
+
+}
+
+/* ==================================
+   NEXT QUESTION
+================================== */
+
+function nextQuestion() {
+
+  if (!answerChecked) return;
+
+  currentQuestion++;
+
+  displayQuestion();
+
+}
+
+/* ==================================
+   RESULTS
+================================== */
+
+function showResults() {
+
+  document.getElementById("quizContent")
+    .classList.add("hidden");
+
+  document.getElementById("resultSection")
+    .classList.remove("hidden");
+
+  const total = questions.length;
+
+  const maxScore = total * 2;
+
+  const percent = Math.round(
+    (score / maxScore) * 100
+  );
+
+  document.getElementById("finalScore")
+    .textContent = `${score} / ${maxScore}`;
+
+  let message = "";
+
+  if (percent === 100) {
+
+    message =
+      "🌟 Perfect score! You're a vocabulary superstar!";
+
+  } else if (percent >= 80) {
+
+    message =
+      "🌸 Excellent work! You know these expressions well!";
+
+  } else if (percent >= 60) {
+
+    message =
+      "💜 Good job! Your vocabulary is improving!";
+
+  } else {
+
+    message =
+      "🌱 Keep learning! Practice makes progress!";
+
+  }
+
+  document.getElementById("resultMessage")
+    .textContent = message;
+
+  document.getElementById("resultDetails")
+    .innerHTML = `
+      <strong>📊 Your Learning Results</strong>
+      <br>
+      🌟 Correct on first try:
+      ${firstTryCorrect}
+      <br>
+      🌷 Correct with a hint:
+      ${secondTryCorrect}
+      <br>
+      💗 Still learning:
+      ${incorrectCount}
+      <br>
+      ⭐ Total Points:
+      ${score} / ${maxScore}
+      <br>
+      🎯 Score:
+      ${percent}%
+    `;
+
+}
+
+/* ==================================
+   HTML ESCAPING
+================================== */
+
+function escapeHTML(text) {
+
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+/* ==================================
+   KEYBOARD SUPPORT
+================================== */
+
+document.getElementById("answerInput")
+  .addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+
+      event.preventDefault();
+
+      if (!answerChecked) {
+        checkAnswer();
+      } else {
+        nextQuestion();
+      }
+
+    }
+
+  });
+
+document.getElementById("flashcard")
+  .addEventListener("keydown", function(event) {
+
+    if (
+      event.key === "Enter" ||
+      event.key === " "
+    ) {
+
+      event.preventDefault();
+
+      flipCard();
+
+    }
+
+  });
+
+/* ==================================
+   INITIALIZATION
+================================== */
+
+displayCard();
+
+showSection("reading");
+
+</script>
+
+</body>
+</html>
